@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh">
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   命令手册 | Payload
+  </title>
+  <style>
+   :root {
+      --bg: #1e1e1e;
+      --fg: #ddd;
+      --entry-bg: #2c2c2c;
+      --entry-hover: #3a3a3a;
+      --scroll-thumb: #666;
+      --scroll-thumb-hover: #888;
+      --btn-bg: #333;
+      --btn-fg: #ccc;
+      --btn-border: #444;
+      --btn-active-bg: #4ec9b0;
+      --btn-active-fg: #000;
+      --payload-bg: #444;
+      --payload-fg: #fff;
+      --toast-bg: #4ec9b0;
+      --toast-fg: #000;
+      --desc: #aaa;
+      --search-bg: #2d2d2d;
+      --search-fg: #fff;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f5f5;
+        --fg: #222;
+        --entry-bg: #fff;
+        --entry-hover: #f0f0f0;
+        --scroll-thumb: #ccc;
+        --scroll-thumb-hover: #aaa;
+        --btn-bg: #e0e0e0;
+        --btn-fg: #222;
+        --btn-border: #ccc;
+        --btn-active-bg: #4ec9b0;
+        --btn-active-fg: #000;
+        --payload-bg: #eee;
+        --payload-fg: #000;
+        --toast-bg: #4ec9b0;
+        --toast-fg: #000;
+        --desc: #555;
+    --search-bg: #ffffff;
+    --search-fg: #000000;
+      }
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', sans-serif;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0px;
+      bottom: 0;
+      overflow: hidden;
+    }
+
+    #content {
+      height: 100%;
+      overflow-y: scroll;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* 隐藏原始滚动条 */
+    #content::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+    #content {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #custom-scrollbar {
+  pointer-events: none;  /* ✅ 容器不拦截事件 */
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  background: var(--bg);
+}
+
+#scroll-thumb {
+  pointer-events: auto;  /* ✅ 允许滑块响应事件 */
+  position: absolute;
+  width: 100%;
+  background: var(--scroll-thumb);
+  border-radius: 4px;
+  height: 40px;
+  top: 0;
+  cursor: pointer;
+}
+
+
+    #categories {
+        text-align: center;
+        margin-bottom: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    #categories button {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      border: 1px solid var(--btn-border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      margin: 0 6px 6px 0;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    #categories button:hover {
+      background: var(--scroll-thumb-hover);
+    }
+
+    #categories button.active {
+      background: var(--btn-active-bg);
+      color: var(--btn-active-fg);
+    }
+
+    
+#search {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 20px auto;
+  padding: 12px 40px 12px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--search-bg, #2d2d2d);
+  color: var(--search-fg, #fff);
+  background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 5L20.49 19l-5-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  box-sizing: border-box;
+  display: block;
+}
+
+
+    .entry {
+      margin: 12px auto;
+      max-width: 800px;
+      background: var(--entry-bg);
+      border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .entry:hover {
+      background: var(--entry-hover);
+      transform: scale(1.01);
+    }
+
+    .type {
+      font-weight: bold;
+      color: #4ec9b0;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .description {
+      font-size: 13px;
+      color: var(--desc);
+      margin-bottom: 6px;
+    }
+
+    .payload {
+      font-family: monospace;
+      background: var(--payload-bg);
+      color: var(--payload-fg);
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      user-select: all;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .payload:hover {
+      background: var(--scroll-thumb-hover);
+    }
+
+    #toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--toast-bg);
+      color: var(--toast-fg);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 999;
+    }
+
+    #toast.show {
+      opacity: 1;
+    }
+  </style>
+ </head>
+ <body>
+  <div id="container">
+   <div id="content">
+    <div id="categories">
+     <button class="active" data-file="all">全部</button>
+     <button data-file="web">Web渗透</button>
+     <button data-file="nw">系统命令</button>
+     <button data-file="cmd">更新命令</button>
+     <button data-file="xxx">其他命令</button>
+     <button data-file="qwe">qwe</button>
+     <button data-file="qwe2">qwe2</button>
+     <button data-file="qwe3">qwe3</button>
+     <button data-file="qwe4">qwe4</button>
+    </div>
+    
+<div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+  <input id="search" placeholder="🔍 关键词搜索 (支持多个关键词)" type="text"
+    style='flex: 1; max-width: 480px; padding: 10px 36px 10px 14px; font-size: 15px; border-radius: 8px; border: none;
+    background-color: var(--search-bg); color: var(--search-fg); 
+    background-image: url("data:image/svg+xml;utf8,<svg fill=\"gray\" height=\"20\" viewBox=\"0 0 24 24\" width=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 5L20.49 19l-5-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z\"/></svg>");
+    background-repeat: no-repeat; background-position: right 10px center; background-size: 20px; box-sizing: border-box;' />
+
+  <button onclick="openAddModal()" style='
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    background: var(--btn-active-bg);
+    color: var(--btn-active-fg);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s;'
+    onmouseover='this.style.transform="scale(1.05)"' 
+    onmouseout='this.style.transform="scale(1)"'>➕ 自定义添加 Payload
+  </button>
+</div>
+
+<!-- 弹窗 -->
+<div id="addModal" class="modal" style="
+  display:none;
+  position:fixed;
+  top:15%;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--entry-bg);
+  padding:30px;
+  width:90%;
+  max-width:500px;
+  border-radius:12px;
+  z-index:999;
+  color:var(--fg);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+">
+  <h3>添加 Payload</h3>
+  <select id="typeInput" style="display:block; width:100%; margin-bottom:10px;">
+  <option value="" disabled selected>选择类型</option>
+  <option value="web">Web渗透</option>
+  <option value="nw">系统命令</option>
+  <option value="cmd">更新命令</option>
+  <option value="xxx">其他命令</option>
+  <option value="qwe">qwe</option>
+  <option value="qwe2">qwe2</option>
+  <option value="qwe3">qwe3</option>
+  <option value="qwe4">qwe4</option>
+</select>
+  <input id="descInput" placeholder="描述" style="display:block; width:100%; margin-bottom:10px;" />
+  <input id="tagInput" placeholder="自定义标签（可选）" style="display:block; width:100%; margin-bottom:10px;" />
+  <textarea id="payloadInput" placeholder="Payload内容" style="display:block; width:100%; height:160px; resize:vertical; margin-bottom:16px;"></textarea>
+  <div style="text-align:right; margin-top:10px;">
+    <button onclick="savePayload()" style="background:var(--btn-active-bg); color:var(--btn-active-fg); border:none; padding:8px 16px; border-radius:6px; cursor:pointer; margin-right:8px;">保存</button>
+    <button onclick="closeAddModal()" style="background:#666; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">取消</button>
+  </div>
+</div>
+
+    
+<!-- 编辑弹窗 -->
+<div id="editModal" class="modal" style="
+  display:none;
+  position:fixed;
+  top:15%;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--entry-bg);
+  padding:30px;
+  width:90%;
+  max-width:500px;
+  border-radius:12px;
+  z-index:999;
+  color:var(--fg);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+">
+  <h3>编辑 Payload</h3>
+  <select id="editTypeInput" style="display:block; width:100%; margin-bottom:10px;">
+    <option value="web">Web渗透</option>
+    <option value="nw">系统命令</option>
+    <option value="cmd">更新命令</option>
+    <option value="xxx">其他命令</option>
+    <option value="qwe">qwe</option>
+    <option value="all">qwe2</option>
+    <option value="qwe3">qwe3</option>
+    <option value="qwe4">qwe4</option>
+  </select>
+  <input id="editDescInput" placeholder="描述" style="display:block; width:100%; margin-bottom:10px;" />
+  <input id="editTagInput" placeholder="标签（可选）" style="display:block; width:100%; margin-bottom:10px;" />
+  <textarea id="editPayloadInput" placeholder="Payload内容" style="display:block; width:100%; height:100px; resize:vertical; margin-bottom:10px;"></textarea>
+  <div style="text-align:right;">
+    <button onclick="saveEditedPayload()" style="background:var(--btn-active-bg); color:var(--btn-active-fg); border:none; padding:8px 16px; border-radius:6px; cursor:pointer; margin-right:8px;">保存</button>
+    <button onclick="closeEditModal()" style="background:#666; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">取消</button>
+  </div>
+</div>
+
+<div id="result">
+    </div>
+   </div>
+   <div id="custom-scrollbar">
+    <div id="scroll-thumb">
+    </div>
+   </div>
+  </div>
+  <div id="toast">
+   已复制
+  </div>
+  <script>
+   const fileMap = {
+      "all": "../data/all.json",
+      "web": "../data/web.json",
+      "nw": "../data/nw.json",
+      "cmd": "../data/cmd.json",
+      "xxx": "../data/xxx.json",
+      "qwe": "../data/qwe.json",
+      "qwe2": "../data/qwe2.json",
+      "qwe3": "../data/qwe3.json",
+      "qwe4": "../data/qwe4.json"
+
+    };
+
+    let currentData = [];
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    function copyPayload(text) {
+      navigator.clipboard.writeText(text).then(() => showToast("已复制"));
+    }
+
+    function render(data) {
+      const container = document.getElementById("result");
+      container.innerHTML = data.map(item => `
+        <div class="entry" style="position:relative;">
+          <div class="type">[${item.type}] ${
+      item.isCustom ? '<span style="color:#f90; font-size:12px;">(自定义)</span>' : ''
+    }</div>
+          <div class="description">${item.description}${
+      
+item.tag ? item.tag.split(',').map(t => 
+  `<span style="background:#4ec9b033; color:#4ec9b0; font-size:12px; padding:2px 6px; border-radius:10px; margin-left:6px;">#${t.trim()}</span>`
+).join('') : ''
+
+    }</div>
+          <div class="payload" onclick="copyPayload('${(item.payload || item.command).replace(/'/g, "\\'")}')">
+            ${(item.payload || item.command)}
+          </div>
+          
+${item.isCustom ? `
+<button onclick="openEditModal('${item.type}', '${item.description}', '${(item.payload || item.command).replace(/'/g, "\'")}', '${item.tag || ""}')" 
+style="position:absolute; top:6px; right:40px; background:transparent; border:none; color:#4ec9b0; font-size:16px; cursor:pointer;" title="编辑">✎</button>` : ''}
+
+<button onclick="confirmDeletePayload('${item.type}', '${item.description}', '${(item.payload || item.command).replace(/'/g, "\'")}')
+        " style="position:absolute; top:6px; right:10px; background:transparent; border:none; color:#f66; font-size:16px; cursor:pointer;" title="删除">
+        ✖
+     </button>
+        </div>`).join("");
+    }
+
+    function filterAndRender() {
+      const keyword = document.getElementById("search").value.toLowerCase();
+      const filtered = currentData.filter(item =>
+        (item.type && item.type.toLowerCase().includes(keyword)) ||
+        (item.description && item.description.toLowerCase().includes(keyword)) ||
+        ((item.payload || item.command) && (item.payload || item.command).toLowerCase().includes(keyword))
+      );
+      render(filtered);
+      updateScrollThumb();
+    }
+
+    async function loadFile(fileKey) {
+      let data = [];
+      if (fileKey === "all") {
+        const files = Object.values(fileMap).filter(f => f !== fileMap["all"]);
+        const results = await Promise.all(files.map(f => fetch(f).then(r => r.json())));
+        data = results.flat();
+        currentData = [...customData, ...data];
+      } else {
+        data = await fetch(fileMap[fileKey]).then(r => r.json());
+        const filteredCustom = customData.filter(item => item.type === fileKey);
+        currentData = [...filteredCustom, ...data];
+      }
+      filterAndRender();
+    }
+
+    document.querySelectorAll("#categories button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#categories button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        loadFile(btn.dataset.file);
+      });
+    });
+
+    document.getElementById("search").addEventListener("input", filterAndRender);
+
+    const content = document.getElementById("content");
+    const thumb = document.getElementById("scroll-thumb");
+
+    function updateScrollThumb() {
+      const scrollHeight = content.scrollHeight;
+      const clientHeight = content.clientHeight;
+      const scrollTop = content.scrollTop;
+      const thumbHeight = Math.max(40, clientHeight * clientHeight / scrollHeight);
+      const top = scrollTop * clientHeight / scrollHeight;
+      thumb.style.height = thumbHeight + "px";
+      thumb.style.top = top + "px";
+    }
+
+    content.addEventListener("scroll", updateScrollThumb);
+    window.addEventListener("resize", updateScrollThumb);
+
+    loadFile("all");
+    content.addEventListener("scroll", updateScrollThumb);
+window.addEventListener("resize", updateScrollThumb);
+
+loadFile("all");
+
+
+let customData = JSON.parse(localStorage.getItem("customPayloads") || "[]");
+
+function openAddModal() {
+  document.getElementById("addModal").style.display = "block";
+}
+
+function closeAddModal() {
+  document.getElementById("addModal").style.display = "none";
+}
+
+function savePayload() {
+  const type = document.getElementById("typeInput").value.trim();
+  const desc = document.getElementById("descInput").value.trim();
+  const payload = document.getElementById("payloadInput").value.trim();
+  if (!type || !desc || !payload) {
+    showToast("请填写完整内容");
+    return;
+  }
+  const tag = document.getElementById("tagInput").value.trim();
+  customData.push({ type, description: desc, payload, tag, isCustom: true });
+  localStorage.setItem("customPayloads", JSON.stringify(customData));
+  closeAddModal();
+  if (currentCategory === "all") {
+    loadFile("all");
+  } else {
+    currentData = customData;
+    filterAndRender();
+  }
+}
+
+
+
+function confirmDeletePayload(type, desc, payload) {
+  if (!confirm("⚠ 确定要删除这个 Payload 吗？\n分类: " + type + "\n描述: " + desc)) return;
+  customData = customData.filter(item => !(item.type === type && item.description === desc && (item.payload || item.command) === payload));
+  localStorage.setItem("customPayloads", JSON.stringify(customData));
+  loadFile(currentCategory);
+}
+
+
+
+function openEditModal(type, desc, payload, tag) {
+  document.getElementById("editModal").style.display = "block";
+  document.getElementById("editTypeInput").value = type;
+  document.getElementById("editDescInput").value = desc;
+  document.getElementById("editPayloadInput").value = payload;
+  document.getElementById("editTagInput").value = tag || "";
+
+  window.__editKey__ = { type, desc, payload };
+}
+
+function closeEditModal() {
+  document.getElementById("editModal").style.display = "none";
+  window.__editKey__ = null;
+}
+
+function saveEditedPayload() {
+  if (!window.__editKey__) return;
+
+  const type = document.getElementById("editTypeInput").value.trim();
+  const description = document.getElementById("editDescInput").value.trim();
+  const payload = document.getElementById("editPayloadInput").value.trim();
+  const tag = document.getElementById("editTagInput").value.trim();
+
+  const key = window.__editKey__;
+  const index = customData.findIndex(item =>
+    item.type === key.type &&
+    item.description === key.desc &&
+    (item.payload || item.command) === key.payload
+  );
+  if (index >= 0) {
+    customData[index] = { type, description, payload, tag, isCustom: true };
+    localStorage.setItem("customPayloads", JSON.stringify(customData));
+  }
+
+  closeEditModal();
+  loadFile(currentCategory);
+}
+
+
+// === 拖动滑块功能 ===
+const scrollbar = document.getElementById("custom-scrollbar");
+let isDragging = false;
+let startY = 0;
+let startScrollTop = 0;
+
+thumb.addEventListener("mousedown", (e) => {
+  isDragging = true;
+  startY = e.clientY;
+  startScrollTop = content.scrollTop;
+  document.body.style.userSelect = "none";
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  const deltaY = e.clientY - startY;
+  const scrollHeight = content.scrollHeight;
+  const clientHeight = content.clientHeight;
+  const scrollRatio = scrollHeight / clientHeight;
+  content.scrollTop = startScrollTop + deltaY * scrollRatio;
+});
+
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  document.body.style.userSelect = "";
+});
+  </script>
+ </body>
+</html>
