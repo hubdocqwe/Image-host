@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<title>
+   命令手册 | Payload
+  </title>
+<style>
+   :root {
+      --bg: #1e1e1e;
+      --fg: #ddd;
+      --entry-bg: #2c2c2c;
+      --entry-hover: #3a3a3a;
+      --scroll-thumb: #666;
+      --scroll-thumb-hover: #888;
+      --btn-bg: #333;
+      --btn-fg: #ccc;
+      --btn-border: #444;
+      --btn-active-bg: #4ec9b0;
+      --btn-active-fg: #000;
+      --payload-bg: #444;
+      --payload-fg: #fff;
+      --toast-bg: #4ec9b0;
+      --toast-fg: #000;
+      --desc: #aaa;
+      --search-bg: #2d2d2d;
+      --search-fg: #fff;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f5f5;
+        --fg: #222;
+        --entry-bg: #fff;
+        --entry-hover: #f0f0f0;
+        --scroll-thumb: #ccc;
+        --scroll-thumb-hover: #aaa;
+        --btn-bg: #e0e0e0;
+        --btn-fg: #222;
+        --btn-border: #ccc;
+        --btn-active-bg: #4ec9b0;
+        --btn-active-fg: #000;
+        --payload-bg: #eee;
+        --payload-fg: #000;
+        --toast-bg: #4ec9b0;
+        --toast-fg: #000;
+        --desc: #555;
+    --search-bg: #ffffff;
+    --search-fg: #000000;
+      }
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', sans-serif;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0px;
+      bottom: 0;
+      overflow: hidden;
+    }
+
+    #content {
+      height: 100%;
+      overflow-y: scroll;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* 隐藏原始滚动条 */
+    #content::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+    #content {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #custom-scrollbar {
+  pointer-events: none;  /* ✅ 容器不拦截事件 */
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  background: var(--bg);
+}
+
+#scroll-thumb {
+  pointer-events: auto;  /* ✅ 允许滑块响应事件 */
+  position: absolute;
+  width: 100%;
+  background: var(--scroll-thumb);
+  border-radius: 4px;
+  height: 40px;
+  top: 0;
+  cursor: pointer;
+}
+
+
+    #categories {
+
+        text-align: center;
+        margin-bottom: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+    #categories button {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      border: 1px solid var(--btn-border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      margin: 0 6px 6px 0;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    #categories button:hover {
+      background: var(--scroll-thumb-hover);
+    }
+
+    #categories button.active {
+      background: var(--btn-active-bg);
+      color: var(--btn-active-fg);
+    }
+
+    
+#search {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 20px auto;
+  padding: 12px 40px 12px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--search-bg, #2d2d2d);
+  color: var(--search-fg, #fff);
+  background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 5L20.49 19l-5-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  box-sizing: border-box;
+  display: block;
+}
+
+
+    .entry {
+      margin: 12px auto;
+      max-width: 800px;
+      background: var(--entry-bg);
+      border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .entry:hover {
+      background: var(--entry-hover);
+      transform: scale(1.01);
+    }
+
+    .type {
+      font-weight: bold;
+      color: #4ec9b0;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .description {
+      font-size: 13px;
+      color: var(--desc);
+      margin-bottom: 6px;
+    }
+
+    .payload {
+        font-family: 'Fira Code', monospace;
+      background: var(--payload-bg);
+      color: var(--payload-fg);
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      
+      user-select: all;
+      cursor: pointer;
+      font-size: 13px;
+        transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease; /* 悬停时平滑过渡动画 */
+
+    }
+
+    .payload:hover {
+  background: rgba(255, 200, 0, 0.1); /* 微黄亮光背景 */
+  box-shadow: 0 0 6px rgba(255, 200, 0, 0.4); /* 周围发光 */
+  transform: scale(1.01);
+}
+
+    #toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 999;
+}
+
+    #toast.show {
+      opacity: 1;
+    }
+  
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 20px;
+  color: #4ec9b0;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.modal input,
+.modal select,
+.modal textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--btn-border);
+  background-color: var(--entry-bg);
+  color: var(--fg);
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  font-size: 14px;
+  outline: none;
+}
+
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus {
+  border-color: var(--btn-active-bg);
+  box-shadow: 0 0 0 2px #4ec9b055;
+}
+
+
+.confirm-modal.shifted {
+  top: 60% !important;
+}
+
+
+.confirm-buttons {
+  margin-top: 16px;
+  text-align: center;
+  pointer-events: auto;
+}
+.confirm-buttons button {
+  margin: 0 10px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  background: var(--btn-active-bg);
+  color: var(--btn-active-fg);
+}
+.confirm-buttons button.cancel {
+  background: #888;
+  color: #fff;
+}
+
+#markdown-toc:hover {
+  right: 0 !important;
+}
+</style>
+<style>
+#markdown-content h1, h2, h3, h4 {
+  color: #4ec9b0;
+  border-bottom: 1px solid #444;
+  padding-bottom: 4px;
+}
+#markdown-content table {
+  border-collapse: collapse;
+  margin-top: 12px;
+  width: 100%;
+}
+#markdown-content th, td {
+  border: 1px solid #555;
+  padding: 8px 12px;
+}
+#markdown-content pre {
+  background: #222;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+#markdown-content code {
+  background: #333;
+  color: #ffc66d;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+#markdown-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 16px auto;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+
+#markdown-viewer button {
+  background: #4ec9b0;
+  color: #000;
+  border: none;
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+</style>
+</head>
+<body>
+<div id="container">
+<div id="content">
+<div id="categories">
+
+<button class="active" data-file="all">全部命令</button>
+<button data-file="网络通信">网络通信</button>
+<button data-file="系统命令">系统命令</button>
+<button data-file="Web渗透">Web渗透</button>
+<button data-file="内网渗透">内网渗透</button>
+<button data-file="工具命令">工具命令</button>
+<button data-file="其他命令">其他命令</button>
+<button data-file="插件说明">插件说明</button>
+</div>
+<div style="display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 30px; margin-bottom: 10px; max-width: 680px; margin-left: auto; margin-right: auto;">
+<input id="search" placeholder="🔍 关键词搜索 (支持多个关键词)" style="flex:1; min-width: 240px; padding: 10px 36px 10px 14px; font-size: 15px; border-radius: 8px; border: none;
+    background-color: var(--search-bg); color: var(--search-fg); 
+    background-image: url('data:image/svg+xml;utf8,&lt;svg fill=\'gray\' height=\'20\' viewBox=\'0 0 24 24\' width=\'20\' xmlns=\'http://www.w3.org/2000/svg\'&gt;&lt;path d=\'M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 5L20.49 19l-5-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z\'/&gt;&lt;/svg&gt;');
+    background-repeat: no-repeat; background-position: right 10px center; background-size: 20px; box-sizing: border-box;" type="text"/>
+<button onclick="openAddModal()" onmouseout='this.style.transform="scale(1)"' onmouseover='this.style.transform="scale(1.05)"' style="
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  background: var(--btn-active-bg);
+  color: var(--btn-active-fg);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+  position: relative;
+  top: -9px;">➕ 自定义添加 Payload</button>
+</div>
+<!-- 弹窗 -->
+<div class="modal" id="addModal" style="
+  display:none;
+  position:fixed;
+  top:12%;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--entry-bg);
+  padding:28px 24px;
+  width:95%;
+  max-width:480px;
+  border-radius:14px;
+  z-index:999;
+  color:var(--fg);
+  box-shadow:0 8px 30px rgba(0,0,0,0.6);
+  font-size: 14px;
+">
+<h3>添加 Payload</h3>
+<select id="typeInput">
+<option disabled="" selected="" value="">选择类型</option>
+<option value="网络通信">网络通信</option>
+<option value="系统命令">系统命令</option>
+<option value="Web渗透">Web渗透</option>
+<option value="内网渗透">内网渗透</option>
+<option value="工具命令">工具命令</option>
+<option value="其他命令">其他命令</option>
+</select>
+<input id="descInput" placeholder="描述"/>
+<input id="tagInput" placeholder="自定义标签（可选）"/>
+<textarea id="payloadInput" placeholder="Payload内容" style="height:140px; resize:vertical;"></textarea>
+<div style="text-align:right; margin-top:10px;">
+<button onclick="savePayload()" style="background:var(--btn-active-bg); color:var(--btn-active-fg); border:none; padding:8px 16px; border-radius:6px; cursor:pointer; margin-right:8px;">保存</button>
+<button onclick="closeAddModal()" style="background:#666; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">取消</button>
+</div>
+</div>
+<!-- 编辑弹窗 -->
+<div class="modal" id="editModal" style="
+  display:none;
+  position:fixed;
+  top:15%;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--entry-bg);
+  padding:30px;
+  width:90%;
+  max-width:500px;
+  border-radius:12px;
+  z-index:999;
+  color:var(--fg);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+">
+<h3>编辑 Payload</h3>
+<select id="editTypeInput" style="display:block; width:100%; margin-bottom:10px;">
+<option value="网络通信">网络通信</option>
+<option value="系统命令">系统命令</option>
+<option value="Web渗透">Web渗透</option>
+<option value="内网渗透">内网渗透</option>
+<option value="工具命令">工具命令</option>
+<option value="其他命令">其他命令</option>
+</select>
+<input id="editDescInput" placeholder="描述" style="display:block; width:100%; margin-bottom:10px;"/>
+<input id="editTagInput" placeholder="标签（可选）" style="display:block; width:100%; margin-bottom:10px;"/>
+<textarea id="editPayloadInput" placeholder="Payload内容" style="display:block; width:100%; height:100px; resize:vertical; margin-bottom:10px;"></textarea>
+<div style="text-align:right;">
+<button onclick="saveEditedPayload()" style="background:var(--btn-active-bg); color:var(--btn-active-fg); border:none; padding:8px 16px; border-radius:6px; cursor:pointer; margin-right:8px;">保存</button>
+<button onclick="closeEditModal()" style="background:#666; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">取消</button>
+</div>
+</div>
+<div id="result">
+</div>
+</div>
+<div id="custom-scrollbar">
+<div id="scroll-thumb">
+</div>
+</div>
+</div>
+<div id="toast">
+   已复制
+  </div>
+<script>
+function showCenterMessage(msg) {
+  const modal = document.getElementById("messageModal");
+  modal.textContent = msg;
+  modal.style.display = "block";
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 2000);
+}
+
+   const fileMap = {
+  "网络通信": "../data/网络通信.json",
+  "系统命令": "../data/系统命令.json",
+  "Web渗透": "../data/Web渗透.json",
+  "内网渗透": "../data/内网渗透.json",
+  "工具命令": "../data/工具命令.json",
+  "其他命令": "../data/其他命令.json",
+  "插件说明": "../data/插件说明.json"
+};
+
+    let currentData = [];
+
+    
+async function checkMarkdownExists(description) {
+  const filename = encodeURIComponent(description.trim()) + ".md";
+  try {
+    const res = await fetch("markdowns/" + filename, { method: "HEAD" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+
+function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    function copyPayload(text) {
+      navigator.clipboard.writeText(text).then(() => showToast("已复制"));
+    }
+
+    
+
+function sortPayloads(data) {
+  return data.sort((a, b) => {
+    // 同类型时，自定义优先
+    if (a.type !== b.type) return a.type.localeCompare(b.type);
+    if (a.isCustom && !b.isCustom) return -1;
+    if (!a.isCustom && b.isCustom) return 1;
+    return 0;
+  });
+}
+
+
+async function render(data) {
+  const container = document.getElementById("result");
+  container.innerHTML = "";
+
+  for (const item of data) {
+    const entry = document.createElement("div");
+    entry.className = "entry";
+    entry.style.position = "relative";
+
+    const tagHTML = item.tag ? item.tag.split(',').map(t =>
+      `<span style="background:#4ec9b033; color:#4ec9b0; font-size:12px; padding:2px 6px; border-radius:10px; margin-left:6px;">#${t.trim()}</span>`
+    ).join('') : '';
+
+    const isCustomTag = item.isCustom ? '<span style="color:#f90; font-size:12px;">(自定义)</span>' : '';
+    entry.innerHTML = `
+      <div class="type">[${item.type}] ${isCustomTag}</div>
+      <div class="description">${item.description}${tagHTML}</div>
+    `;
+
+    // ✅ payload 显示 + 复制
+    const payloadDiv = document.createElement("div");
+    payloadDiv.className = "payload";
+    payloadDiv.textContent = item.payload || item.command;
+    payloadDiv.addEventListener("click", () => copyPayload(item.payload || item.command));
+    entry.appendChild(payloadDiv);
+
+    // ✅ 查看详情按钮
+    if (await checkMarkdownExists(item.description)) {
+      const btn = document.createElement("button");
+      btn.innerText = "📄 查看详情";
+      btn.style = "margin-top:10px; display:inline-block; background:#4ec9b0; color:#000; padding:6px 12px; border:none; border-radius:6px; cursor:pointer;";
+      btn.onclick = () => showMarkdown(item.description);
+      entry.appendChild(btn);
+    }
+
+    // ✅ 编辑按钮（自定义项才显示）
+    if (item.isCustom) {
+      const editBtn = document.createElement("button");
+      editBtn.innerText = "✎";
+      editBtn.title = "编辑";
+      editBtn.style = "position:absolute; top:6px; right:40px; background:transparent; border:none; color:#4ec9b0; font-size:16px; cursor:pointer;";
+      editBtn.onclick = () => openEditModal(item.type, item.description, item.payload || item.command, item.tag || "");
+      entry.appendChild(editBtn);
+    }
+
+    // ✅ 删除按钮
+    const delBtn = document.createElement("button");
+    delBtn.innerText = "✖";
+    delBtn.title = "删除";
+    delBtn.style = "position:absolute; top:6px; right:10px; background:transparent; border:none; color:#f66; font-size:16px; cursor:pointer;";
+    delBtn.onclick = () => confirmDeletePayload(item.type, item.description, item.payload || item.command);
+    entry.appendChild(delBtn);
+
+    container.appendChild(entry);
+  }
+}
+
+    
+function filterAndRender() {
+  const rawKeyword = document.getElementById("search").value.toLowerCase().trim();
+  if (!rawKeyword) {
+    render(currentData);
+    updateScrollThumb();
+    return;
+  }
+
+  const keywords = rawKeyword.split(/[\s,，]+/); // 支持空格/逗号/中文逗号分隔关键词
+
+  const filtered = currentData.filter(item => {
+    const target = (
+      (item.type || '') + ' ' +
+      (item.description || '') + ' ' +
+      (item.payload || item.command || '') + ' ' +
+      (item.tag || '')
+    ).toLowerCase();
+    return keywords.every(k => target.includes(k));
+  });
+
+  render(filtered);
+  updateScrollThumb();
+}
+
+
+    async function loadFile(fileKey) {
+      let data = [];
+      if (fileKey === "all") {
+        const files = Object.values(fileMap).filter(f => f !== fileMap["all"]);
+        const results = await Promise.all(files.map(f => fetch(f).then(r => r.json())));
+        data = results.flat();
+        const allPayloads = [...customData, ...data];
+        const typeOrder = ['插件说明', '网络通信', '系统命令', 'Web渗透', '内网渗透', '工具命令', '其他命令'];
+        allPayloads.sort((a, b) => {
+          const t1 = typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+          if (t1 !== 0) return t1;
+          return (a.description || "").localeCompare(b.description || "");
+        });
+        currentData = allPayloads;
+      } else {
+        data = await fetch(fileMap[fileKey]).then(r => r.json());
+        const filteredCustom = customData.filter(item => item.type === fileKey);
+        currentData = [...filteredCustom, ...data];
+      }
+      filterAndRender();
+    }
+
+    document.querySelectorAll("#categories button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#categories button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        loadFile(btn.dataset.file);
+      });
+    });
+
+    document.getElementById("search").addEventListener("input", filterAndRender);
+
+    const content = document.getElementById("content");
+    const thumb = document.getElementById("scroll-thumb");
+
+    function updateScrollThumb() {
+      const scrollHeight = content.scrollHeight;
+      const clientHeight = content.clientHeight;
+      const scrollTop = content.scrollTop;
+      const thumbHeight = Math.max(40, clientHeight * clientHeight / scrollHeight);
+      const top = scrollTop * clientHeight / scrollHeight;
+      thumb.style.height = thumbHeight + "px";
+      thumb.style.top = top + "px";
+    }
+
+    content.addEventListener("scroll", updateScrollThumb);
+    window.addEventListener("resize", updateScrollThumb);
+    loadFile("all");
+
+    content.addEventListener("scroll", updateScrollThumb);
+window.addEventListener("resize", updateScrollThumb);
+    
+
+let customData = JSON.parse(localStorage.getItem("customPayloads") || "[]");
+
+
+
+function openAddModal() {
+  const modal = document.getElementById("addModal");
+  const select = document.getElementById("typeInput");
+
+  // 先隐藏 select，避免首次渲染闪烁
+  select.style.visibility = "hidden";
+  modal.style.display = "block";
+
+  // 延迟显示 select，确保布局稳定
+  setTimeout(() => {
+    select.style.visibility = "visible";
+    select.style.maxWidth = "100%";
+    select.style.width = "100%";
+    select.style.boxSizing = "border-box";
+  }, 30);
+}
+
+
+
+function closeAddModal() {
+  document.getElementById("addModal").style.display = "none";
+}
+
+function savePayload() {
+  const type = document.getElementById("typeInput").value.trim();
+  const desc = document.getElementById("descInput").value.trim();
+  const payload = document.getElementById("payloadInput").value.trim();
+  if (!type || !desc || !payload) {
+    showToast("请填写完整内容");
+    return;
+  }
+  const tag = document.getElementById("tagInput").value.trim();
+  customData.push({ type, description: desc, payload, tag, isCustom: true });
+  localStorage.setItem("customPayloads", JSON.stringify(customData));
+
+  const modal = document.getElementById("confirmModal");
+  const msg = document.getElementById("confirmMessage");
+  const btns = document.getElementById("confirmButtons");
+  msg.innerHTML = "✅ 添加成功，请刷新页面查看";
+  btns.style.display = "none";
+  modal.style.display = "block";
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 2000);
+  closeAddModal();
+  if (currentCategory === "all") {
+    } else {
+    currentData = customData;
+    filterAndRender();
+  }
+}
+
+
+
+
+function openEditModal(type, desc, payload, tag) {
+  document.getElementById("editModal").style.display = "block";
+  document.getElementById("editTypeInput").value = type;
+  document.getElementById("editDescInput").value = desc;
+  document.getElementById("editPayloadInput").value = payload;
+  document.getElementById("editTagInput").value = tag || "";
+
+  window.__editKey__ = { type, desc, payload };
+}
+
+function closeEditModal() {
+  document.getElementById("editModal").style.display = "none";
+  window.__editKey__ = null;
+}
+
+function saveEditedPayload() {
+  if (!window.__editKey__) return;
+
+  const type = document.getElementById("editTypeInput").value.trim();
+  const description = document.getElementById("editDescInput").value.trim();
+  const payload = document.getElementById("editPayloadInput").value.trim();
+  const tag = document.getElementById("editTagInput").value.trim();
+
+  const key = window.__editKey__;
+  const index = customData.findIndex(item =>
+    item.type === key.type &&
+    item.description === key.desc &&
+    (item.payload || item.command) === key.payload
+  );
+  if (index >= 0) {
+    customData[index] = { type, description, payload, tag, isCustom: true };
+    localStorage.setItem("customPayloads", JSON.stringify(customData));
+
+    const modal = document.getElementById("confirmModal");
+    const msg = document.getElementById("confirmMessage");
+    const btns = document.getElementById("confirmButtons");
+    showCenterMessage("✅ 编辑成功");
+  }
+
+  closeEditModal();
+  loadFile(currentCategory);
+}
+
+
+let __deleteTarget__ = null;
+
+function confirmDeletePayload(type, desc, payload) {
+  const item = currentData.find(i => i.type === type && i.description === desc && (i.payload || i.command) === payload);
+  if (!item) return showToast("未找到该 Payload");
+
+  const modal = document.getElementById("confirmModal");
+  const msg = document.getElementById("confirmMessage");
+  const btns = document.getElementById("confirmButtons");
+
+  if (!item.isCustom) {
+  __deleteTarget__ = null;
+  showCenterMessage("❌ 无法删除内置 Payload");
+  return;
+    return;
+  }
+
+  __deleteTarget__ = { type, desc, payload };
+  msg.innerHTML = `⚠️ 是否删除该 Payload？<br><b>分类：</b>${type}<br><b>描述：</b>${desc}`;
+  btns.style.display = "block";
+  modal.style.display = "block";
+}
+
+function closeConfirmModal(confirmed) {
+  const modal = document.getElementById("confirmModal");
+  const msg = document.getElementById("confirmMessage");
+  const btns = document.getElementById("confirmButtons");
+
+  modal.style.display = "none";
+  if (!confirmed || !__deleteTarget__) return;
+
+  const { type, desc, payload } = __deleteTarget__;
+  customData = customData.filter(i => !(i.type === type && i.description === desc && (i.payload || i.command) === payload));
+  localStorage.setItem("customPayloads", JSON.stringify(customData));
+
+  showCenterMessage("✅ 删除成功");
+
+  loadFile(currentCategory);
+  if (window.utools) utools.hideMainWindow();
+}
+
+
+
+
+function showMarkdown(description) {
+  const filename = encodeURIComponent(description.trim()) + ".md";
+  fetch("markdowns/" + filename)
+    .then(res => res.text())
+    .then(md => {
+      document.getElementById("markdown-content").innerHTML = marked.parse(md);
+      document.getElementById("markdown-viewer").style.display = "block";
+    })
+    .catch(() => showToast("❌ 未找到文档"));
+}
+function closeMarkdown() {
+  document.getElementById("markdown-viewer").style.display = "none";
+}
+
+
+// === 拖动滑块功能 ===
+const scrollbar = document.getElementById("custom-scrollbar");
+let isDragging = false;
+let startY = 0;
+let startScrollTop = 0;
+
+thumb.addEventListener("mousedown", (e) => {
+  isDragging = true;
+  startY = e.clientY;
+  startScrollTop = content.scrollTop;
+  document.body.style.userSelect = "none";
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  const deltaY = e.clientY - startY;
+  const scrollHeight = content.scrollHeight;
+  const clientHeight = content.clientHeight;
+  const scrollRatio = scrollHeight / clientHeight;
+  content.scrollTop = startScrollTop + deltaY * scrollRatio;
+});
+
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  document.body.style.userSelect = "";
+});
+  </script>
+<!-- 删除确认弹窗 -->
+<div class="confirm-modal shifted" id="confirmModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%,-80%);
+ background:var(--entry-bg); padding:24px 24px; border-radius:12px; box-shadow:0 0 20px rgba(0,0,0,0.5); z-index:1001; max-width:90%; width:360px;">
+<div id="confirmMessage" style="font-size:16px; color:var(--fg); text-align:center;"></div>
+<div class="confirm-buttons" id="confirmButtons" style="display:none;">
+<button onclick="closeConfirmModal(true)">✅ 是</button>
+<button class="cancel" onclick="closeConfirmModal(false)">取消</button>
+</div>
+</div><div id="messageModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);background:var(--entry-bg); padding:24px 24px; border-radius:12px; box-shadow:0 0 20px rgba(0,0,0,0.5);z-index:1001; max-width:90%; width:360px; text-align:center; font-size:16px; color:var(--fg);"></div>
+<!-- 内嵌 Markdown 查看器 -->
+<div id="markdown-viewer" style="
+  display:none;
+  position:fixed;
+  top:0; left:0; width:100%; height:100%;
+  background:linear-gradient(to bottom right, #1e1e1e, #2a2a2a);
+  color:#ccc;
+  overflow:auto;
+  padding:30px 20px 40px;
+  z-index:999;
+  font-family: 'Segoe UI', sans-serif;
+">
+<div style="display:flex; justify-content:center; gap:32px; align-items:flex-start;">
+<div id="markdown-toc" style="
+        position: fixed;
+        top: 100px;
+        right: -180px;
+        width: 200px;
+        max-height: 80vh;
+        overflow: auto;
+        background: #1b1b1b;
+        padding: 16px;
+        border-radius: 8px 0 0 8px;
+        transition: right 0.3s ease;
+        z-index: 1000;
+    "></div>
+<div style="max-width:700px; flex:1;">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+<h1 style="color:#4ec9b0; font-size:20px; margin:0;">📘 详情内容</h1>
+<button onclick="closeMarkdown()" style="padding:6px 14px; font-size:13px; background:#4ec9b0; color:#000; border:none; border-radius:6px;">返回</button>
+</div>
+<div id="markdown-content" style="line-height:1.8; font-size:16px;"></div>
+</div>
+</div>
+</div>
+<script src="./marked.min.js"></script>
+<script>
+document.addEventListener("scroll", function () {
+  const content = document.getElementById("markdown-content");
+  const tocLinks = document.querySelectorAll("#markdown-toc a");
+  const headers = content.querySelectorAll("h1, h2");
+  let index = -1;
+  for (let i = 0; i < headers.length; i++) {
+    if (headers[i].getBoundingClientRect().top >= 60) {
+      index = i - 1;
+      break;
+    }
+  }
+  if (index === -1) index = headers.length - 1;
+  tocLinks.forEach(link => link.classList.remove("active"));
+  if (index >= 0 && tocLinks[index]) tocLinks[index].classList.add("active");
+});
+
+function buildMarkdownTOC() {
+  const toc = document.getElementById("markdown-toc");
+  const content = document.getElementById("markdown-content");
+  toc.innerHTML = "<h2 style='margin-top:0;'>📚 目录</h2>";
+  const headers = content.querySelectorAll("h1, h2");
+  headers.forEach((h, i) => {
+    const id = "section-" + i;
+    h.id = id;
+    const link = document.createElement("a");
+    link.href = "#" + id;
+    link.textContent = h.textContent;
+    link.style.display = "block";
+    link.style.marginBottom = "8px";
+    link.style.color = "#ccc";
+    link.style.fontSize = "14px";
+    link.style.textDecoration = "none";
+    link.onmouseenter = () => link.style.color = "#4ec9b0";
+    link.onmouseleave = () => link.style.color = "#ccc";
+    toc.appendChild(link);
+  });
+}
+
+function showMarkdown(description) {
+  const filename = encodeURIComponent(description.trim()) + ".md";
+  fetch("markdowns/" + filename)
+    .then(res => res.text())
+    .then(md => {
+      const container = document.getElementById("markdown-content");
+      container.innerHTML = marked.parse(md);
+      document.getElementById("markdown-viewer").style.display = "block";
+      buildMarkdownTOC();
+    })
+    .catch(() => showToast("❌ 未找到文档"));
+}
+</script></body>
+</html>
